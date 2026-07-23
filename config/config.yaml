@@ -1,0 +1,36 @@
+project:
+  name: AfriAdapt
+  version: 0.1.0
+
+model:
+  base: Qwen/Qwen2.5-7B-Instruct
+
+languages:
+  - en
+  - sw
+  - luo
+  - ki
+  - sh
+
+domains:
+  - language
+  - agriculture
+  - finance
+  - communications
+
+difficulty:
+  - easy
+  - medium
+  - hard
+
+reasoning:
+  - factual
+  - analytical
+  - comparative
+  - procedural
+  - planning
+
+generation:
+  benchmark_per_domain: 20
+  train_per_domain: 20
+  validation_per_domain: 5

@@ -1,0 +1,58 @@
+{"id": "AFRI-1ba17b2d", "domain": "finance", "language": "ki", "difficulty": "hard", "reasoning_type": "comparative", "instruction": "Describe how DeFi works in Kenya."}
+{"id": "AFRI-e17ef00d", "domain": "finance", "language": "luo", "difficulty": "medium", "reasoning_type": "factual", "instruction": "Explain USDT to a Entrepreneur."}
+{"id": "AFRI-025ef680", "domain": "finance", "language": "ki", "difficulty": "medium", "reasoning_type": "planning", "instruction": "Compare Savings with Budgeting."}
+{"id": "AFRI-24c0cec0", "domain": "finance", "language": "sh", "difficulty": "medium", "reasoning_type": "procedural", "instruction": "Explain Ethereum to a Entrepreneur."}
+{"id": "AFRI-31357570", "domain": "finance", "language": "sw", "difficulty": "easy", "reasoning_type": "planning", "instruction": "Compare USDT with Bitcoin."}
+{"id": "AFRI-34ce4060", "domain": "finance", "language": "sw", "difficulty": "hard", "reasoning_type": "factual", "instruction": "Explain M-Pesa to a Entrepreneur."}
+{"id": "AFRI-f9ca0699", "domain": "finance", "language": "ki", "difficulty": "easy", "reasoning_type": "planning", "instruction": "When should someone use Ethereum?"}
+{"id": "AFRI-748f8977", "domain": "finance", "language": "luo", "difficulty": "medium", "reasoning_type": "analytical", "instruction": "Explain M-Pesa to a Doctor."}
+{"id": "AFRI-a861c5a0", "domain": "finance", "language": "sh", "difficulty": "hard", "reasoning_type": "comparative", "instruction": "What are the benefits of Budgeting?"}
+{"id": "AFRI-ddf28143", "domain": "finance", "language": "sw", "difficulty": "hard", "reasoning_type": "comparative", "instruction": "When should someone use Stablecoins?"}
+{"id": "AFRI-47785e57", "domain": "finance", "language": "luo", "difficulty": "easy", "reasoning_type": "planning", "instruction": "What are the benefits of USDT?"}
+{"id": "AFRI-e5761ae2", "domain": "finance", "language": "en", "difficulty": "hard", "reasoning_type": "factual", "instruction": "What are the benefits of Ethereum?"}
+{"id": "AFRI-f92f2c84", "domain": "finance", "language": "en", "difficulty": "hard", "reasoning_type": "comparative", "instruction": "Describe how M-Pesa works in Kenya."}
+{"id": "AFRI-50496add", "domain": "finance", "language": "ki", "difficulty": "easy", "reasoning_type": "comparative", "instruction": "When should someone use USDC?"}
+{"id": "AFRI-4afe40f2", "domain": "finance", "language": "ki", "difficulty": "easy", "reasoning_type": "factual", "instruction": "Explain USDT to a Developer."}
+{"id": "AFRI-2063c7e1", "domain": "finance", "language": "en", "difficulty": "easy", "reasoning_type": "factual", "instruction": "Describe how Ethereum works in Kenya."}
+{"id": "AFRI-a6f48449", "domain": "finance", "language": "ki", "difficulty": "medium", "reasoning_type": "planning", "instruction": "Describe how Stablecoins works in Kenya."}
+{"id": "AFRI-595fb673", "domain": "finance", "language": "sw", "difficulty": "medium", "reasoning_type": "comparative", "instruction": "Compare USDC with Stablecoins."}
+{"id": "AFRI-1c4c46d7", "domain": "finance", "language": "en", "difficulty": "hard", "reasoning_type": "comparative", "instruction": "Explain SACCO to a Farmer."}
+{"id": "AFRI-32bd53e6", "domain": "finance", "language": "ki", "difficulty": "easy", "reasoning_type": "procedural", "instruction": "Describe how Bitcoin works in Kenya."}
+{"id": "AFRI-98aa5925", "domain": "finance", "language": "en", "difficulty": "hard", "reasoning_type": "procedural", "instruction": "Compare Ethereum with USDT."}
+{"id": "AFRI-13c8f119", "domain": "finance", "language": "sw", "difficulty": "easy", "reasoning_type": "comparative", "instruction": "Explain USDT to a Farmer."}
+{"id": "AFRI-079c4c54", "domain": "finance", "language": "sh", "difficulty": "easy", "reasoning_type": "factual", "instruction": "Explain Ethereum to a Farmer."}
+{"id": "AFRI-25b151ca", "domain": "finance", "language": "en", "difficulty": "medium", "reasoning_type": "procedural", "instruction": "When should someone use Bitcoin?"}
+{"id": "AFRI-d4461e9b", "domain": "finance", "language": "en", "difficulty": "hard", "reasoning_type": "planning", "instruction": "Explain Stablecoins to a Entrepreneur."}
+{"id": "AFRI-697a1ea7", "domain": "finance", "language": "ki", "difficulty": "easy", "reasoning_type": "analytical", "instruction": "Compare M-Pesa with USDT."}
+{"id": "AFRI-ba970048", "domain": "finance", "language": "en", "difficulty": "hard", "reasoning_type": "comparative", "instruction": "What are the benefits of Savings?"}
+{"id": "AFRI-a563e6c3", "domain": "finance", "language": "luo", "difficulty": "hard", "reasoning_type": "comparative", "instruction": "Describe how Budgeting works in Kenya."}
+{"id": "AFRI-5a63c34d", "domain": "finance", "language": "sw", "difficulty": "hard", "reasoning_type": "comparative", "instruction": "What are the benefits of Bitcoin?"}
+{"id": "AFRI-f8923aaa", "domain": "finance", "language": "luo", "difficulty": "hard", "reasoning_type": "procedural", "instruction": "What are the benefits of USDC?"}
+{"id": "AFRI-0b5281b5", "domain": "finance", "language": "en", "difficulty": "easy", "reasoning_type": "comparative", "instruction": "When should someone use Savings?"}
+{"id": "AFRI-ec97c2c7", "domain": "finance", "language": "sw", "difficulty": "medium", "reasoning_type": "analytical", "instruction": "Explain USDC to a Farmer."}
+{"id": "AFRI-0e8f9a28", "domain": "finance", "language": "ki", "difficulty": "hard", "reasoning_type": "comparative", "instruction": "When should someone use Budgeting?"}
+{"id": "AFRI-3b0d9e67", "domain": "finance", "language": "luo", "difficulty": "easy", "reasoning_type": "procedural", "instruction": "Explain USDT to a Community Manager."}
+{"id": "AFRI-39b27554", "domain": "finance", "language": "ki", "difficulty": "medium", "reasoning_type": "comparative", "instruction": "What are the benefits of Stablecoins?"}
+{"id": "AFRI-87a185ee", "domain": "finance", "language": "en", "difficulty": "hard", "reasoning_type": "comparative", "instruction": "Explain USDT to a Teacher."}
+{"id": "AFRI-5ed5fa9a", "domain": "finance", "language": "sh", "difficulty": "medium", "reasoning_type": "procedural", "instruction": "Compare Stablecoins with Savings."}
+{"id": "AFRI-687dc462", "domain": "finance", "language": "sh", "difficulty": "hard", "reasoning_type": "factual", "instruction": "Compare Bitcoin with Savings."}
+{"id": "AFRI-b66b1361", "domain": "finance", "language": "ki", "difficulty": "easy", "reasoning_type": "planning", "instruction": "Compare Budgeting with Budgeting."}
+{"id": "AFRI-8560b4c0", "domain": "finance", "language": "ki", "difficulty": "medium", "reasoning_type": "comparative", "instruction": "Explain Budgeting to a Teacher."}
+{"id": "AFRI-d02ea0de", "domain": "finance", "language": "en", "difficulty": "hard", "reasoning_type": "comparative", "instruction": "When should someone use USDT?"}
+{"id": "AFRI-e71a7819", "domain": "finance", "language": "luo", "difficulty": "easy", "reasoning_type": "factual", "instruction": "Explain USDC to a Developer."}
+{"id": "AFRI-74fb1700", "domain": "finance", "language": "sw", "difficulty": "medium", "reasoning_type": "planning", "instruction": "Compare Ethereum with M-Pesa."}
+{"id": "AFRI-69b6f7b8", "domain": "finance", "language": "ki", "difficulty": "medium", "reasoning_type": "procedural", "instruction": "Compare Budgeting with USDC."}
+{"id": "AFRI-dd48d5a5", "domain": "finance", "language": "en", "difficulty": "hard", "reasoning_type": "factual", "instruction": "When should someone use SACCO?"}
+{"id": "AFRI-15b189ec", "domain": "finance", "language": "en", "difficulty": "easy", "reasoning_type": "procedural", "instruction": "Compare Savings with Stablecoins."}
+{"id": "AFRI-049d8e72", "domain": "finance", "language": "sw", "difficulty": "medium", "reasoning_type": "planning", "instruction": "Compare SACCO with Stablecoins."}
+{"id": "AFRI-5152fdeb", "domain": "finance", "language": "sh", "difficulty": "medium", "reasoning_type": "comparative", "instruction": "Compare USDT with Savings."}
+{"id": "AFRI-66674657", "domain": "finance", "language": "en", "difficulty": "medium", "reasoning_type": "procedural", "instruction": "Describe how USDT works in Kenya."}
+{"id": "AFRI-0230a041", "domain": "finance", "language": "sh", "difficulty": "easy", "reasoning_type": "procedural", "instruction": "Explain Budgeting to a Community Manager."}
+{"id": "AFRI-cd6037c0", "domain": "finance", "language": "sh", "difficulty": "easy", "reasoning_type": "analytical", "instruction": "Compare M-Pesa with SACCO."}
+{"id": "AFRI-acf6be84", "domain": "finance", "language": "sh", "difficulty": "easy", "reasoning_type": "analytical", "instruction": "What are the benefits of M-Pesa?"}
+{"id": "AFRI-e6920b37", "domain": "finance", "language": "ki", "difficulty": "easy", "reasoning_type": "factual", "instruction": "Compare Budgeting with DeFi."}
+{"id": "AFRI-bb0e0e4c", "domain": "finance", "language": "ki", "difficulty": "medium", "reasoning_type": "comparative", "instruction": "Explain Stablecoins to a Community Manager."}
+{"id": "AFRI-ac754894", "domain": "finance", "language": "ki", "difficulty": "medium", "reasoning_type": "analytical", "instruction": "Compare USDC with SACCO."}
+{"id": "AFRI-558590e5", "domain": "finance", "language": "luo", "difficulty": "medium", "reasoning_type": "planning", "instruction": "Explain DeFi to a Teacher."}
+{"id": "AFRI-d2cefe3f", "domain": "finance", "language": "luo", "difficulty": "medium", "reasoning_type": "procedural", "instruction": "When should someone use M-Pesa?"}
+{"id": "AFRI-1597301e", "domain": "finance", "language": "ki", "difficulty": "medium", "reasoning_type": "planning", "instruction": "Compare M-Pesa with Budgeting."}

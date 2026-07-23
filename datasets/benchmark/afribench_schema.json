@@ -1,0 +1,21 @@
+{
+  "id": "AFB-000001",
+  "domain": "finance",
+  "language": "en",
+  "difficulty": "medium",
+  "skill": "reasoning",
+  "instruction": "",
+  "reference_answer": "",
+  "evaluation_criteria": {
+    "accuracy": true,
+    "local_context": true,
+    "clarity": true,
+    "completeness": true,
+    "safe_response": true
+  },
+  "metadata": {
+    "version": "1.0",
+    "generator": "AfriBench",
+    "reviewed": false
+  }
+}

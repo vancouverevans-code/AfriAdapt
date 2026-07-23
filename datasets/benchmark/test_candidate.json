@@ -1,0 +1,21 @@
+{
+    "id": "AFB-1cee80c9",
+    "domain": "finance",
+    "language": "en",
+    "difficulty": "easy",
+    "skill": "reasoning",
+    "instruction": "A small business owner in Nairobi, Kenya, is trying to decide between two loan options to expand her shop. Option A has an interest rate of 12% per annum, and Option B has an interest rate of 15% per annum. If she borrows KES 500,000, which option will cost her less in interest over a 3-year period, and by how much?",
+    "reference_answer": "To determine which loan option will cost the business owner less in interest over a 3-year period, we need to calculate the total interest for each option. For Option A, the interest over 3 years is 12% * 500,000 * 3 = KES 180,000. For Option B, the interest over 3 years is 15% * 500,000 * 3 = KES 225,000. Therefore, Option A will cost her KES 45,000 less in interest over the 3-year period.",
+    "evaluation_criteria": {
+        "accuracy": true,
+        "local_context": true,
+        "clarity": true,
+        "completeness": true,
+        "safe_response": true
+    },
+    "metadata": {
+        "version": "1.0",
+        "reviewed": false,
+        "pilot": true
+    }
+}
