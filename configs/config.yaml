@@ -1,0 +1,78 @@
+project:
+  name: AfriAdapt
+  version: "1.0"
+
+# ---------------------------------------------------
+# Domains supported by dataset generation
+# ---------------------------------------------------
+domains:
+  - finance
+  - agriculture
+  - language
+  - communications
+
+# ---------------------------------------------------
+# Languages used for generation
+# ---------------------------------------------------
+languages:
+  - en
+  - sw
+  - ki
+  - luo
+
+# ---------------------------------------------------
+# Difficulty levels
+# ---------------------------------------------------
+difficulty:
+  - easy
+  - medium
+  - hard
+
+# ---------------------------------------------------
+# Reasoning styles
+# ---------------------------------------------------
+reasoning:
+  - factual
+  - analytical
+  - planning
+  - comparison
+  - explanation
+
+# ---------------------------------------------------
+# Generation settings
+# ---------------------------------------------------
+generation:
+  dataset_size: 2000
+  train_per_domain: 500
+  retries: 3
+
+# ---------------------------------------------------
+# Benchmark settings
+# ---------------------------------------------------
+benchmark:
+  pilot: true
+  candidates: 16
+
+# ---------------------------------------------------
+# LLM
+# ---------------------------------------------------
+llm:
+  provider: openrouter
+  model: qwen/qwen-2.5-72b-instruct
+  temperature: 0.3
+  max_tokens: 512
+
+# ---------------------------------------------------
+# Evaluation
+# ---------------------------------------------------
+evaluation:
+  judge_model: qwen/qwen-2.5-72b-instruct
+  minimum_quality_score: 8
+
+# ---------------------------------------------------
+# Experiment tracking
+# ---------------------------------------------------
+experiment:
+  save_every: 10
+  track_tokens: true
+  track_cost: true

@@ -1,7 +1,7 @@
 """
 AfriAdapt Universal Dataset Generator
 
-Generates structured instruction records from all supported domains,
+Generates structured instruction records from all configured domains,
 validates them, removes duplicates, and exports them to JSONL.
 """
 
@@ -16,34 +16,88 @@ from scripts.generate.validator import (
 )
 from scripts.utils.config import load_config
 
-# Load project configuration
+# ----------------------------------------------------
+# Load configuration
+# ----------------------------------------------------
+
 config = load_config()
 
-# Output directory
 OUTPUT_DIR = Path("datasets/generated")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 OUTPUT_FILE = OUTPUT_DIR / "afriadapt_train.jsonl"
 
 
+def get_domains():
+    """
+    Return configured domains or sensible defaults.
+    """
+
+    return config.get(
+        "domains",
+        [
+            "finance",
+            "agriculture",
+            "language",
+            "communications",
+        ],
+    )
+
+
+def get_samples_per_domain():
+    """
+    Determine how many samples to generate
+    for each domain.
+
+    Supports both:
+
+    generation:
+        train_per_domain: 100
+
+    and
+
+    generation:
+        dataset_size: 2000
+    """
+
+    generation_cfg = config.get("generation", {})
+
+    # Preferred setting
+    if "train_per_domain" in generation_cfg:
+        return generation_cfg["train_per_domain"]
+
+    dataset_size = generation_cfg.get("dataset_size", 100)
+
+    domains = get_domains()
+
+    return max(
+        1,
+        dataset_size // len(domains),
+    )
+
+
 def generate_dataset():
     """
-    Generate instruction records across all configured domains.
+    Generate the complete dataset.
     """
+
     dataset = []
 
-    samples_per_domain = config["generation"]["train_per_domain"]
+    domains = get_domains()
 
-    for domain in config["domains"]:
+    samples_per_domain = get_samples_per_domain()
+
+    print(f"\nDomains: {domains}")
+    print(f"Samples per domain: {samples_per_domain}\n")
+
+    for domain in domains:
 
         print(f"Generating {domain}...")
 
         for _ in range(samples_per_domain):
 
-            # Build a prompt
             prompt = build_prompt(domain)
 
-            # Convert it into a training record
             record = build_record(prompt)
 
             dataset.append(record)
@@ -53,14 +107,25 @@ def generate_dataset():
 
 def export_jsonl(dataset, output_file):
     """
-    Export dataset to JSONL format.
+    Export dataset to JSONL.
     """
-    with open(output_file, "w", encoding="utf-8") as file:
-        for sample in dataset:
-            file.write(json.dumps(sample, ensure_ascii=False) + "\n")
 
-    print("\nDataset successfully exported!")
-    print(f"Saved {len(dataset)} samples")
+    with open(output_file, "w", encoding="utf-8") as file:
+
+        for sample in dataset:
+
+            file.write(
+                json.dumps(
+                    sample,
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
+
+    print("\nDataset exported successfully.")
+
+    print(f"Samples : {len(dataset)}")
+
     print(f"Location: {output_file}")
 
 
@@ -70,23 +135,26 @@ def main():
     print("AfriAdapt Universal Dataset Generator")
     print("=" * 60)
 
-    # Generate records
     dataset = generate_dataset()
 
     print(f"\nGenerated {len(dataset)} records.")
 
-    # Remove duplicate instructions
-    dataset = remove_duplicate_instructions(dataset)
+    dataset = remove_duplicate_instructions(
+        dataset
+    )
 
-    print(f"Remaining after deduplication: {len(dataset)} records.")
+    print(
+        f"Remaining after deduplication: {len(dataset)}"
+    )
 
-    # Display statistics
     summarize_dataset(dataset)
 
-    # Export dataset
-    export_jsonl(dataset, OUTPUT_FILE)
+    export_jsonl(
+        dataset,
+        OUTPUT_FILE,
+    )
 
-    print("\n✅ Dataset generation completed successfully!")
+    print("\nDataset generation completed successfully.")
 
 
 if __name__ == "__main__":

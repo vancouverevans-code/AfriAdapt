@@ -1,5 +1,7 @@
 """
 AfriAdapt Universal Prompt Builder
+
+Generates structured prompts for dataset creation.
 """
 
 import random
@@ -7,6 +9,7 @@ import uuid
 
 from scripts.utils.knowledge_loader import load_knowledge
 from scripts.utils.config import load_config
+
 from scripts.generate.templates import (
     FINANCE_TEMPLATES,
     AGRICULTURE_TEMPLATES,
@@ -14,8 +17,16 @@ from scripts.generate.templates import (
     COMMUNICATION_TEMPLATES,
 )
 
+# ---------------------------------------------------
+# Load knowledge + configuration
+# ---------------------------------------------------
+
 knowledge = load_knowledge()
 config = load_config()
+
+# ---------------------------------------------------
+# Prompt templates
+# ---------------------------------------------------
 
 TEMPLATES = {
     "finance": FINANCE_TEMPLATES,
@@ -25,79 +36,189 @@ TEMPLATES = {
 }
 
 
+# ---------------------------------------------------
+# Helpers
+# ---------------------------------------------------
+
 def generate_id():
-    return "AFRI-" + str(uuid.uuid4())[:8]
+    """Generate a unique sample ID."""
+    return f"AFRI-{uuid.uuid4().hex[:8]}"
 
 
-def build_prompt(domain: str):
+def random_language():
+    return random.choice(
+        config.get(
+            "languages",
+            ["en"],
+        )
+    )
+
+
+def random_difficulty():
+    return random.choice(
+        config.get(
+            "difficulty",
+            ["medium"],
+        )
+    )
+
+
+def random_reasoning():
+    return random.choice(
+        config.get(
+            "reasoning",
+            ["factual"],
+        )
+    )
+
+
+# ---------------------------------------------------
+# Prompt Builder
+# ---------------------------------------------------
+
+def build_prompt(
+    domain: str,
+    language: str | None = None,
+):
     """
-    Build one structured prompt for the given domain.
+    Build one structured prompt.
+
+    Returns a dictionary ready for record_builder.
     """
 
-    template = random.choice(TEMPLATES[domain])
+    if domain not in TEMPLATES:
+        raise ValueError(
+            f"Unknown domain '{domain}'"
+        )
 
-    language = random.choice(config["languages"])
-    difficulty = random.choice(config["difficulty"])
-    reasoning = random.choice(config["reasoning"])
+    template = random.choice(
+        TEMPLATES[domain]
+    )
 
-    # ---------- Finance ----------
+    language = language or random_language()
+
+    difficulty = random_difficulty()
+
+    reasoning = random_reasoning()
+
+    # -----------------------------
+    # Finance
+    # -----------------------------
 
     if domain == "finance":
 
-        concept = random.choice(knowledge["finance"])
-        comparison = random.choice(knowledge["finance"])
-        persona = random.choice(knowledge["personas"])
-
         instruction = template.format(
-            concept=concept,
-            comparison=comparison,
-            persona=persona,
+
+            concept=random.choice(
+                knowledge["finance"]
+            ),
+
+            comparison=random.choice(
+                knowledge["finance"]
+            ),
+
+            persona=random.choice(
+                knowledge["personas"]
+            ),
         )
 
-    # ---------- Agriculture ----------
+    # -----------------------------
+    # Agriculture
+    # -----------------------------
 
     elif domain == "agriculture":
 
-        crop = random.choice(knowledge["agriculture"])
-
         instruction = template.format(
-            crop=crop,
+
+            crop=random.choice(
+                knowledge["agriculture"]
+            ),
+
             disease="blight",
+
             fertilizer="organic fertilizer",
+
             weather="drought",
+
         )
 
-    # ---------- Language ----------
+    # -----------------------------
+    # Language
+    # -----------------------------
 
     elif domain == "language":
 
         instruction = template.format(
-            language=random.choice(knowledge["languages"])
+
+            language=random.choice(
+                knowledge["languages"]
+            )
+
         )
 
-    # ---------- Communications ----------
+    # -----------------------------
+    # Communications
+    # -----------------------------
 
     elif domain == "communications":
 
         instruction = template.format(
+
             topic="AI adoption in Africa",
-            product="AfriAdapt"
+
+            product="AfriAdapt",
+
         )
 
     else:
-        raise ValueError(f"Unknown domain: {domain}")
+
+        raise ValueError(
+            f"Unsupported domain: {domain}"
+        )
 
     return {
+
         "id": generate_id(),
+
         "domain": domain,
+
         "language": language,
+
         "difficulty": difficulty,
+
         "reasoning_type": reasoning,
+
         "instruction": instruction,
+
     }
 
 
+# ---------------------------------------------------
+# Smoke Test
+# ---------------------------------------------------
+
 if __name__ == "__main__":
 
-    for domain in config["domains"]:
-        print(build_prompt(domain))
+    domains = config.get(
+        "domains",
+        [
+            "finance",
+            "agriculture",
+            "language",
+            "communications",
+        ],
+    )
+
+    print("\nGenerated Samples\n")
+
+    for domain in domains:
+
+        sample = build_prompt(domain)
+
+        print("=" * 60)
+
+        for key, value in sample.items():
+
+            print(f"{key}: {value}")
+
+        print()

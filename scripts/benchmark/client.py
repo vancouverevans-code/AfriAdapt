@@ -1,48 +1,110 @@
 """
-Benchmark generation client.
+AfriBench Benchmark Client
+
+Builds benchmark prompts and delegates LLM generation
+to the central generator.
 """
 
-import json
-
-from scripts.llm.client import client
-from scripts.llm.config import (
-    MODEL,
-    TEMPERATURE,
-)
+from typing import Dict
 
 from scripts.benchmark.prompts import build_prompt
+from scripts.llm.generator import generate_response
+from scripts.utils.logger import logger
 
 
 def generate_candidate(
-    domain,
-    language,
-    difficulty,
-    skill,
-):
+    domain: str,
+    language: str,
+    difficulty: str,
+    skill: str,
+) -> Dict:
+    """
+    Generate a single benchmark candidate.
 
-    response = client.chat.completions.create(
+    Parameters
+    ----------
+    domain
+        Benchmark domain.
 
-        model=MODEL,
+    language
+        Target language.
 
-        temperature=TEMPERATURE,
+    difficulty
+        Difficulty level.
 
-        response_format={
-            "type": "json_object"
-        },
+    skill
+        Reasoning skill.
 
-        messages=[
-            {
-                "role": "user",
-                "content": build_prompt(
-                    domain,
-                    language,
-                    difficulty,
-                    skill,
-                ),
-            }
-        ],
+    Returns
+    -------
+    dict
+        Parsed benchmark candidate.
+    """
+
+    logger.info(
+        "Benchmark Candidate | %s | %s | %s | %s",
+        domain,
+        language,
+        difficulty,
+        skill,
     )
 
-    return json.loads(
-        response.choices[0].message.content
+    prompt = build_prompt(
+        domain,
+        language,
+        difficulty,
+        skill,
     )
+
+    record = {
+
+        "domain": domain,
+
+        "instruction": prompt,
+
+        "metadata": {
+
+            "domain": domain,
+
+            "language": language,
+
+            "difficulty": difficulty,
+
+            "skill": skill,
+
+        }
+
+    }
+
+    response = generate_response(record)
+
+    logger.info(
+        "Candidate generated successfully."
+    )
+
+    return response
+
+
+def main():
+
+    sample = generate_candidate(
+
+        domain="finance",
+
+        language="en",
+
+        difficulty="medium",
+
+        skill="reasoning",
+
+    )
+
+    print()
+
+    from pprint import pprint
+
+    pprint(sample)
+
+
+if __name__ == "__main__":
+    main()
