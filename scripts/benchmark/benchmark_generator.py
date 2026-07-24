@@ -1,16 +1,24 @@
 """
 AfriBench Benchmark Generator
 
-Generates benchmark candidates, validates them,
-removes duplicates, scores quality, and exports
-them as JSONL.
+Production benchmark generation pipeline.
+
+Features
+--------
+✓ Parallel execution
+✓ Automatic validation
+✓ Duplicate removal
+✓ Quality scoring
+✓ Checkpoint & Resume
+✓ Experiment tracking
 """
 
 import json
-import uuid
-from typing import Dict
+from pathlib import Path
 
-from scripts.benchmark.client import generate_candidate
+from scripts.benchmark.parallel import run_parallel
+from scripts.benchmark.worker import benchmark_worker
+
 from scripts.benchmark.spec import (
     PILOT_DOMAINS,
     PILOT_LANGUAGES,
@@ -18,47 +26,84 @@ from scripts.benchmark.spec import (
     PILOT_SKILLS,
 )
 
-from scripts.benchmark.benchmark_validator import validate_candidate
-from scripts.benchmark.duplicate_checker import is_duplicate
-from scripts.benchmark.quality import quality_score
+from scripts.benchmark.checkpoint import (
+    save_checkpoint,
+    load_checkpoint,
+    clear_checkpoint,
+)
+
+from scripts.utils.logger import logger
+
+from scripts.utils.experiment import (
+    start_experiment,
+    finish_experiment,
+)
 
 from scripts.utils.paths import BENCHMARK_OUTPUT
-from scripts.utils.logger import logger
-from scripts.utils.experiment import new_experiment
-
-OUTPUT = BENCHMARK_OUTPUT
 
 
-def save_record(record: Dict, outfile):
+OUTPUT = Path(BENCHMARK_OUTPUT)
 
-    outfile.write(
-        json.dumps(
-            record,
-            ensure_ascii=False,
-        )
-        + "\n"
+
+# ---------------------------------------------------------
+# Build Tasks
+# ---------------------------------------------------------
+
+def build_tasks():
+    """
+    Build every benchmark combination.
+    """
+
+    tasks = []
+
+    for domain in PILOT_DOMAINS:
+
+        for language in PILOT_LANGUAGES:
+
+            for difficulty in PILOT_DIFFICULTIES:
+
+                for skill in PILOT_SKILLS:
+
+                    tasks.append({
+
+                        "domain": domain,
+
+                        "language": language,
+
+                        "difficulty": difficulty,
+
+                        "skill": skill,
+
+                    })
+
+    return tasks
+
+
+# ---------------------------------------------------------
+# Worker Wrapper
+# ---------------------------------------------------------
+
+seen = set()
+
+
+def worker(task):
+
+    return benchmark_worker(
+        task,
+        seen,
     )
 
 
-def main():
+# ---------------------------------------------------------
+# Save JSONL
+# ---------------------------------------------------------
 
-    experiment = new_experiment()
+def save_records(records):
 
-    logger.info(
-        "Benchmark experiment started: %s",
-        experiment["id"],
+    OUTPUT.parent.mkdir(
+        parents=True,
+        exist_ok=True,
     )
-
-    print("=" * 70)
-    print("AfriBench Benchmark Generator")
-    print("=" * 70)
-
-    seen = set()
-
-    generated = 0
-    validation_failed = 0
-    duplicates = 0
-    generation_errors = 0
 
     with open(
         OUTPUT,
@@ -66,167 +111,155 @@ def main():
         encoding="utf-8",
     ) as outfile:
 
-        for domain in PILOT_DOMAINS:
+        for record in records:
 
-            for language in PILOT_LANGUAGES:
+            outfile.write(
 
-                for difficulty in PILOT_DIFFICULTIES:
+                json.dumps(
+                    record,
+                    ensure_ascii=False,
+                )
 
-                    for skill in PILOT_SKILLS:
+                + "\n"
 
-                        print("\n" + "-" * 60)
+            )
 
-                        print(f"Domain      : {domain}")
-                        print(f"Language    : {language}")
-                        print(f"Difficulty  : {difficulty}")
-                        print(f"Skill       : {skill}")
 
-                        logger.info(
-                            "Generating | %s | %s | %s | %s",
-                            domain,
-                            language,
-                            difficulty,
-                            skill,
-                        )
+# ---------------------------------------------------------
+# Main
+# ---------------------------------------------------------
 
-                        try:
+def main():
 
-                            candidate = generate_candidate(
-                                domain=domain,
-                                language=language,
-                                difficulty=difficulty,
-                                skill=skill,
-                            )
+    logger.info("=" * 70)
+    logger.info("AfriBench Benchmark Generator")
+    logger.info("=" * 70)
 
-                        except Exception as e:
+    start_experiment("Benchmark")
 
-                            generation_errors += 1
+    state = load_checkpoint()
 
-                            logger.exception(
-                                "Generation failed."
-                            )
+    completed = state["completed"]
 
-                            print(f"\nGeneration failed:\n{e}")
+    generated = state["generated"]
 
-                            continue
+    duplicates = state["duplicates"]
 
-                        valid, errors = validate_candidate(candidate)
+    validation_failed = state["validation_failed"]
 
-                        if not valid:
+    generation_errors = state["generation_errors"]
 
-                            validation_failed += 1
-
-                            logger.warning(
-                                "Validation failed."
-                            )
-
-                            print("\nValidation failed")
-
-                            for err in errors:
-
-                                print(f" • {err}")
-
-                            continue
-
-                        if is_duplicate(
-                            candidate["instruction"],
-                            seen,
-                        ):
-
-                            duplicates += 1
-
-                            logger.info(
-                                "Duplicate skipped."
-                            )
-
-                            print("Duplicate skipped")
-
-                            continue
-
-                        score = quality_score(candidate)
-
-                        record = {
-
-                            "id":
-                                f"AFB-{uuid.uuid4().hex[:8]}",
-
-                            "domain":
-                                domain,
-
-                            "language":
-                                language,
-
-                            "difficulty":
-                                difficulty,
-
-                            "skill":
-                                skill,
-
-                            "instruction":
-                                candidate["instruction"],
-
-                            "reference_answer":
-                                candidate["reference_answer"],
-
-                            "evaluation_criteria":
-                                candidate["evaluation_criteria"],
-
-                            "quality_score":
-                                score,
-
-                            "metadata": {
-
-                                "experiment":
-                                    experiment["id"],
-
-                                "version":
-                                    "1.0",
-
-                                "pilot":
-                                    True,
-
-                                "reviewed":
-                                    False,
-
-                            }
-
-                        }
-
-                        save_record(
-                            record,
-                            outfile,
-                        )
-
-                        generated += 1
-
-                        logger.info(
-                            "Saved benchmark case."
-                        )
-
-                        print(
-                            f"Saved (Quality {score}/10)"
-                        )
-
-    print("\n" + "=" * 70)
-
-    print("AfriBench Generation Complete")
-
-    print("=" * 70)
-
-    print(f"Generated            : {generated}")
-
-    print(f"Validation Failed    : {validation_failed}")
-
-    print(f"Duplicates Removed   : {duplicates}")
-
-    print(f"Generation Errors    : {generation_errors}")
-
-    print(f"Saved To             : {OUTPUT}")
+    tasks = build_tasks()
 
     logger.info(
-        "Benchmark experiment finished."
+        "Total benchmark tasks : %s",
+        len(tasks),
     )
+
+    if completed > 0:
+
+        logger.info(
+            "Skipping first %s completed tasks.",
+            completed,
+        )
+
+    tasks = tasks[completed:]
+
+    records = []
+
+    results = run_parallel(
+        tasks,
+        worker,
+    )
+
+    for status, payload in results:
+
+        completed += 1
+
+        if status == "success":
+
+            generated += 1
+
+            records.append(payload)
+
+        elif status == "duplicate":
+
+            duplicates += 1
+
+        elif status == "validation_failed":
+
+            validation_failed += 1
+
+            logger.warning(payload)
+
+        elif status == "generation_error":
+
+            generation_errors += 1
+
+            logger.error(payload)
+
+        # ----------------------------------
+        # Save every 10 completed tasks
+        # ----------------------------------
+
+        if completed % 10 == 0:
+
+            save_checkpoint(
+
+                completed=completed,
+
+                generated=generated,
+
+                duplicates=duplicates,
+
+                validation_failed=validation_failed,
+
+                generation_errors=generation_errors,
+
+            )
+
+    save_records(records)
+
+    clear_checkpoint()
+
+    logger.info("")
+    logger.info("=" * 70)
+    logger.info("AfriBench Generation Complete")
+    logger.info("=" * 70)
+
+    logger.info(
+        "Generated            : %s",
+        generated,
+    )
+
+    logger.info(
+        "Duplicates           : %s",
+        duplicates,
+    )
+
+    logger.info(
+        "Validation Failed    : %s",
+        validation_failed,
+    )
+
+    logger.info(
+        "Generation Errors    : %s",
+        generation_errors,
+    )
+
+    logger.info(
+        "Completed Tasks      : %s",
+        completed,
+    )
+
+    logger.info(
+        "Saved To             : %s",
+        OUTPUT,
+    )
+
+    finish_experiment()
 
 
 if __name__ == "__main__":
+
     main()

@@ -1,10 +1,18 @@
 """
 LLM Response Generator
 
-Production-ready OpenRouter client used across AfriAdapt.
+Central interface for all LLM calls in AfriAdapt.
+
+Features
+--------
+- Automatic retries
+- Safe JSON parsing
+- Response validation
+- Token usage tracking
+- Latency tracking
+- Structured logging
 """
 
-import json
 import time
 from typing import Dict, Optional
 
@@ -16,7 +24,9 @@ from scripts.llm.config import (
 )
 
 from scripts.llm.prompts import get_system_prompt
+from scripts.utils.json_repair import safe_json_load
 from scripts.utils.logger import logger
+
 
 MAX_RETRIES = 3
 RETRY_DELAY = 2
@@ -29,6 +39,9 @@ def generate_response(
     temperature: Optional[float] = None,
     max_tokens: Optional[int] = None,
 ) -> Dict:
+    """
+    Generate a structured response from the configured LLM.
+    """
 
     if "instruction" not in record:
         raise ValueError("Record missing 'instruction'.")
@@ -40,11 +53,10 @@ def generate_response(
         record.get("domain", "general"),
     )
 
-    model_name = model or MODEL
-    temp = TEMPERATURE if temperature is None else temperature
-    tokens = MAX_TOKENS if max_tokens is None else max_tokens
-
-    logger.info("Generating response | domain=%s", domain)
+    logger.info(
+        "Generating response | domain=%s",
+        domain,
+    )
 
     last_error = None
 
@@ -56,25 +68,36 @@ def generate_response(
 
             response = client.chat.completions.create(
 
-                model=model_name,
+                model=model or MODEL,
 
-                temperature=temp,
+                temperature=(
+                    temperature
+                    if temperature is not None
+                    else TEMPERATURE
+                ),
 
-                max_tokens=tokens,
+                max_tokens=(
+                    max_tokens
+                    if max_tokens is not None
+                    else MAX_TOKENS
+                ),
 
                 response_format={
                     "type": "json_object"
                 },
 
                 messages=[
+
                     {
                         "role": "system",
                         "content": get_system_prompt(domain),
                     },
+
                     {
                         "role": "user",
                         "content": record["instruction"],
                     },
+
                 ],
             )
 
@@ -88,93 +111,73 @@ def generate_response(
                 elapsed,
             )
 
-            # -----------------------------
-            # Validate response
-            # -----------------------------
+            # -------------------------
+            # Validate response object
+            # -------------------------
 
             if response is None:
-                raise RuntimeError(
-                    "OpenRouter returned None."
-                )
+                raise RuntimeError("Response is None.")
 
-            if not hasattr(response, "choices"):
-                raise RuntimeError(
-                    "Missing choices field."
-                )
-
-            if response.choices is None:
-                raise RuntimeError(
-                    "choices is None."
-                )
+            if getattr(response, "choices", None) is None:
+                raise RuntimeError("choices is None.")
 
             if len(response.choices) == 0:
-                raise RuntimeError(
-                    "choices list is empty."
-                )
+                raise RuntimeError("No choices returned.")
 
             message = response.choices[0].message
 
             if message is None:
-                raise RuntimeError(
-                    "message is None."
-                )
+                raise RuntimeError("Message is None.")
 
             content = message.content
 
-            if not content:
-                raise RuntimeError(
-                    "Empty model response."
-                )
+            if content is None:
+                raise RuntimeError("Model returned empty content.")
 
-            try:
-                result = json.loads(content)
+            usage = getattr(response, "usage", None)
 
-            except json.JSONDecodeError:
-
-                result = {
-                    "answer": content
-                }
-
-            usage = getattr(
-                response,
-                "usage",
-                None,
-            )
+            result = safe_json_load(content)
 
             result["_metadata"] = {
 
-                "model": model_name,
+                "model":
+                    model or MODEL,
 
-                "temperature": temp,
+                "temperature":
+                    temperature
+                    if temperature is not None
+                    else TEMPERATURE,
 
-                "latency_seconds": elapsed,
+                "latency_seconds":
+                    elapsed,
 
-                "attempt": attempt,
+                "token_usage":
+                    None if usage is None else {
 
-                "token_usage": None if usage is None else {
+                        "prompt_tokens":
+                            getattr(
+                                usage,
+                                "prompt_tokens",
+                                None,
+                            ),
 
-                    "prompt_tokens":
-                        getattr(
-                            usage,
-                            "prompt_tokens",
-                            None,
-                        ),
+                        "completion_tokens":
+                            getattr(
+                                usage,
+                                "completion_tokens",
+                                None,
+                            ),
 
-                    "completion_tokens":
-                        getattr(
-                            usage,
-                            "completion_tokens",
-                            None,
-                        ),
+                        "total_tokens":
+                            getattr(
+                                usage,
+                                "total_tokens",
+                                None,
+                            ),
+                    },
 
-                    "total_tokens":
-                        getattr(
-                            usage,
-                            "total_tokens",
-                            None,
-                        ),
-
-                },
+                "attempt":
+                    attempt,
 
             }
 
@@ -192,10 +195,7 @@ def generate_response(
             )
 
             if attempt < MAX_RETRIES:
-
-                time.sleep(
-                    RETRY_DELAY * attempt
-                )
+                time.sleep(RETRY_DELAY)
 
     logger.exception(
         "LLM generation failed after retries."
@@ -207,25 +207,25 @@ def generate_response(
 
 
 def main():
+    """
+    Smoke test.
+    """
 
     sample = {
 
         "domain": "finance",
 
         "instruction":
-            "Explain Bitcoin in simple terms.",
+            "Explain what Bitcoin is to a beginner.",
 
     }
 
     response = generate_response(sample)
 
-    print(
-        json.dumps(
-            response,
-            indent=2,
-            ensure_ascii=False,
-        )
-    )
+    print()
+
+    from pprint import pprint
+    pprint(response)
 
 
 if __name__ == "__main__":
